@@ -6,4 +6,4 @@ description      'Installs/Configures autopatch-nativex'
 long_description 'Installs/Configures autopatch-nativex'
 version          '0.1.0'
 
-depends 'windows', '=1.37.0'
+depends 'windows'
