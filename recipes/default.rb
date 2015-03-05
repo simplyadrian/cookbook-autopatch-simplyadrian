@@ -34,6 +34,6 @@ windows_task 'autopatch' do
   months node['autopatch-nativex']['task_months']
   start_time node['autopatch-nativex']['task_start_time']
   cwd 'C:'
-  command "PowerShell -Command \"#{node['autopatch-nativex']['working_dir']}\\auto-patch.ps1\" -ExecutionPolicy Bypass"
+  command "PowerShell -ExecutionPolicy Bypass -Command \"#{node['autopatch-nativex']['working_dir']}\\auto-patch.ps1\"" 
   action :delete if node['autopatch-nativex']['disable']
 end

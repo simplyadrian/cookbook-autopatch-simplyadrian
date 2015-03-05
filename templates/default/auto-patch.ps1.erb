@@ -64,7 +64,7 @@ function SendEmailNotificationIfRequired
     $mailNotificationRequired = (($mailNotificationMode -eq "Always") -or ($mailNotificationMode -eq "OnlyOnErrorOrManualReboot" -and ($someErrorOccurred -or $manualRebootRequired)))
     if($mailNotificationRequired)
     {
-        $mailToAddresses = "<%= node['autopatch-nativex']['email_to_addresses'] %>"
+        $mailToAddresses = <%= node['autopatch-nativex']['email_to_addresses'] %>
         $mailSubject = "AutoPatch ran on $([system.environment]::MachineName). "
         $mailPriority = [System.Net.Mail.MailPriority]::Normal
         $mailBody = "$($bodyMessage)`n`nFull log attached"
