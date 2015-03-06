@@ -71,7 +71,6 @@ function SendEmailNotificationIfRequired
 
         if($manualRebootRequired)
         {
-            $mailPriority = [System.Net.Mail.MailPriority]::High
             $mailSubject = "$($mailSubject) RebootRequired: Yes"
         }
         else
