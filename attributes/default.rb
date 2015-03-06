@@ -11,6 +11,6 @@ default['autopatch-nativex']['download_install_splay_min_seconds'] = 0
 default['autopatch-nativex']['download_install_splay_max_seconds'] = 5400
 default['autopatch-nativex']['email_nofitication_mode'] = 'OnlyOnErrorOrManualReboot'
 default['autopatch-nativex']['email_to_addresses'] = '"SysEngineers@nativex.com"'
-default['autopatch-nativex']['email_from_addresses'] = 'Infrastructure.Engineering@nativex.com'
+default['autopatch-nativex']['email_from_address'] = "#{node['hostname']}@nativex.com"
 default['autopatch-nativex']['email_smtp_server'] = 'mail.nativex.com'
 default['autopatch-nativex']['auto_reboot_enabled'] = false

@@ -65,22 +65,32 @@ function SendEmailNotificationIfRequired
     if($mailNotificationRequired)
     {
         $mailToAddresses = <%= node['autopatch-nativex']['email_to_addresses'] %>
-        $mailSubject = "AutoPatch ran on $([system.environment]::MachineName). "
+        $mailSubject = "AutoPatch ran."
         $mailPriority = [System.Net.Mail.MailPriority]::Normal
         $mailBody = "$($bodyMessage)`n`nFull log attached"
 
-        if($someErrorOccurred -or $manualRebootRequired)
+        if($manualRebootRequired)
         {
             $mailPriority = [System.Net.Mail.MailPriority]::High
-            $mailSubject = "$($mailSubject) ACTION REQUIRED!"
+            $mailSubject = "$($mailSubject) RebootRequired: Yes"
+        }
+        else
+        {
+            $mailSubject = "$($mailSubject) RebootRequired: No"
+        }
 
-            if($someErrorOccurred)
-            {
-                $mailBody = "AN ERROR OCCURRED. See full attached log for details.`n`n$($mailBody)"
-            }
+        if($someErrorOccurred)
+        {
+            $mailPriority = [System.Net.Mail.MailPriority]::High
+            $mailBody = "AN ERROR OCCURRED. See full attached log for details.`n`n$($mailBody)"
+            $mailSubject = "$($mailSubject) Errors: Yes"
+        }
+        else
+        {
+            $mailSubject = "$($mailSubject) Errors: No"
         }
         
-       Send-MailMessage -From "<%= node['autopatch-nativex']['email_from_addresses'] %>" -To $mailToAddresses -Subject $mailSubject -Body $mailBody -SmtpServer "mail.nativex.com" -Priority $mailPriority -Attachments $global:logFile
+       Send-MailMessage -From "<%= node['autopatch-nativex']['email_from_address'] %>" -To $mailToAddresses -Subject $mailSubject -Body $mailBody -SmtpServer "mail.nativex.com" -Priority $mailPriority -Attachments $global:logFile
     }
     else
     {
