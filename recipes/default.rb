@@ -11,18 +11,12 @@
 
 directory "Auto Patch Working Directory" do
   path node['autopatch-nativex']['working_dir']
-#  owner 'root'
-#  group 'root'
-#  mode '0700'
   action :create
 end
 
 template 'AutoPatch PowerShell Script' do
   source 'auto-patch.ps1.erb'
   path "#{node['autopatch-nativex']['working_dir']}\\auto-patch.ps1"
-#  owner 'root'
-#  group 'root'
-#  mode '0700'
   action :delete if node['autopatch-nativex']['disable']
 end
 
