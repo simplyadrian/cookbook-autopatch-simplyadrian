@@ -107,3 +107,8 @@ begin
 rescue Chef::Exceptions::ResourceNotFound
   Chef::Log.warn "Could not find auto-patch template to override!"
 end
+
+# Ensure mailx is there to send notification emails - it should be, but just in case
+package "mailx" do
+  action :install
+end

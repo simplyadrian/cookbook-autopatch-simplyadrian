@@ -7,20 +7,85 @@
 # This is a modified version of https://github.com/bflad/chef-auto-patch/blob/master/templates/default/auto-patch.sh.erb
 # This cookbook overrides the one in the auto-patch cookbook.
 
+# Write a message to a log file and echo it to the console.
+# Param 1: [string] The message to be logged.
+function writeHostAndLogFile {
+  echo $1
+  echo "`date -Is` $1" >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 
+}
+
+# Send an email 
+#  Param 1: [string] The subject of the message to send
+#  Param 2: [string] The plain-text body of the message to send
+function sendEmail {
+  to=derek.bromenshenkel@nativex.com
+  #to=<%= node["autopatch-nativex"]["email_to_addresses"].split(',').map {|x| x.gsub(/"/, "").strip}.join(',') %>
+  from=<%= node["autopatch-nativex"]["email_from_address"] %>
+  subject=$1
+  body=$2
+
+  echo $body | mailx -s "$subject" -r "$from" -a "<%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log" -S smtp="<%= node["autopatch-nativex"]["email_smtp_server"] %>" "$to"
+}
+
+# Based on configuration and the status of the process, conditionally sends an email
+#  Param 1: [string] true or false, indicating whether manual reboot is required
+#  Param 2: [integer], return code of previous process 
+function sendMailIfNecessary {
+  mailNotificationMode=<%= node["autopatch-nativex"]["email_notification_mode"] %>
+  subject="AutoPatch ran."
+  body=""
+
+  #check for non-zero exit code
+  if [ $2 -gt 0 ]
+  then
+    someErrorOccurred=true
+    subject="$subject Errors: Yes"
+    body="AN ERROR OCCURRED. See full attached log for details.\n"
+  else
+    someErrorOccurred=false
+    subject="$subject Errors: No"
+    body="yum update was successful.\n"
+  fi
+
+  manualReboot=$1
+  if [ "$manualReboot" == "true" ]
+  then
+    subject="$subject Reboot: Yes"
+    body="Manual reboot may be required.\n"
+  else
+    subject="$subject Reboot: No"
+    body="Machine will automatically reboot.\n"
+  fi
+
+  if [[ "$mailNotificationMode" == "Always" || ( "$mailNotificationMode" == "OnlyOnErrorOrManualReboot" && ( "$someErrorOccurred" == "true" || "$manualReboot" == "true" ) ) ]]
+  then
+    writeHostAndLogFile "Sending email notification"
+    sendEmail "$subject" "$body"
+  fi
+}
+
+# Real work starts here
 <% if node["auto-patch"]["splay"] > 0 -%>
-sleep $[ ( $RANDOM % <%= node["auto-patch"]["splay"] %> )  + 1 ]s
+sleepSeconds = $[ ( $RANDOM % <%= node["auto-patch"]["splay"] %> )  + 1 ]
+writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $sleepSeconds seconds."
+sleep $sleepSecondss
+<% else -%>
+writeHostAndLogFile "Download and Install Splay is disabled."
 <% end -%>
 
-<% case node["platform_family"] -%>
-<% when "rhel" -%>
-/usr/bin/yum -y -e 0 -d 0 update | grep -v \
-  -e "duration:"
-<% else -%>
-/usr/bin/apt-get -q=2 upgrade > /dev/null
-<% end -%>
+writeHostAndLogFile "Beginning yum upgrade now!"
+
+/usr/bin/yum -y -e 0 -d 0 update >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>>&1
+
+writeHostAndLogFile "Finished yum upgrade with exit code $?"
 
 <% if node["auto-patch"]["reboot"] -%>
-/sbin/init 6
+writeHostAndLogFile "Auto Reboot is enabled. Rebooting now!"
+sendMailIfNecessary false $?
+reboot
+<% else -%>
+writeHostAndLogFile "Auto Reboot is disabled. Manual reboot may be required."
+sendMailIfNecessary true $?
 <% end -%>
 
 exit 0
