@@ -50,11 +50,8 @@ if node["autopatch-nativex"]["disabled"] == false
       #   3) Re-enabling once we are in an "eligible" month.
       if node["autopatch-nativex"]["task_months"] != "*"
         if node["autopatch-nativex"]["task_months"].split(',').include?(DateTime.now.strftime('%^b'))
-          Chef::Log::debug("DEREK - Valid month.")
           # It is a valid month
           # Check if previously disabled
-          Chef::Log::debug("DEREK - Valid month. node['auto-patch']['disable'] = #{node['auto-patch']['disable']}")
-          Chef::Log::debug("DEREK - Valid month. node['autopatch-nativex']['private_lin_autopatch_disabled_programmatically'] = #{node['autopatch-nativex']['private_lin_autopatch_disabled_programmatically']}")
           if node["autopatch-nativex"]["private_lin_autopatch_disabled_programmatically"] == true
             if node["auto-patch"]["disable"] == true
               # Re-enable it
@@ -67,7 +64,6 @@ if node["autopatch-nativex"]["disabled"] == false
           end #end check for re-enabling.. either manually enabled or this code didn't originally disable it.
         else
           # It is an invalid month.  Disable auto-patch if need be and mark the flag that we did it.
-          Chef::Log::debug("DEREK - Invalid month.")
           if node["auto-patch"]["disable"] == false
             node.default["auto-patch"]["disable"] = true
             node.normal["autopatch-nativex"]["private_lin_autopatch_disabled_programmatically"] = true
