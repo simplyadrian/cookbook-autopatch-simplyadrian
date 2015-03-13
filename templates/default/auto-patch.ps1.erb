@@ -59,7 +59,7 @@ function CreateLogFileAndCleanupOldLogs
 function SendEmailNotificationIfRequired
 {
     Param($someErrorOccurred, $manualRebootRequired, $bodyMessage)
-    $mailNotificationMode = "<%= node['autopatch-nativex']['email_nofitication_mode'] %>"
+    $mailNotificationMode = "<%= node['autopatch-nativex']['email_notification_mode'] %>"
 
     $mailNotificationRequired = (($mailNotificationMode -eq "Always") -or ($mailNotificationMode -eq "OnlyOnErrorOrManualReboot" -and ($someErrorOccurred -or $manualRebootRequired)))
     if($mailNotificationRequired)
