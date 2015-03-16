@@ -16,6 +16,7 @@ default['autopatch-nativex']['email_to_addresses'] = '"SysEngineers@nativex.com"
 default['autopatch-nativex']['email_from_address'] = "#{node['hostname']}@nativex.com"
 default['autopatch-nativex']['email_smtp_server'] = 'mail.nativex.com'
 default['autopatch-nativex']['auto_reboot_enabled'] = false
+default['autopatch-nativex']['updates_to_skip'] = []
 
 #syncronize auto-patch enablement with this cookbook's main setting
 default["auto-patch"]["disable"] = node['autopatch-nativex']['disabled']

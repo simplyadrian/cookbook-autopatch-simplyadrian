@@ -73,7 +73,16 @@ function sendMailIfNecessary {
 
 # Real work starts here
 writeHostAndLogFile "Checking for available updates."
-/usr/bin/yum check-update >><%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+<% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
+# There are updates configured to be skipped.  Skip them during the update check as well.
+writeHostAndLogFile "Skipping packages: <%= node["autopatch-nativex"]["updates_to_skip"].join(',') %>"
+<%# The following ruby code maps each 'skippable' element in the array to a string preceded by '-x '. -x is the skip option for yum. Then joins those together with spaces %>
+updatesToSkipYumOptions="<%= node["autopatch-nativex"]["updates_to_skip"].map { |skipPkg| "-x #{skipPkg}" }.join(' ') %>"
+<% else -%>
+#No configured updates to skip.
+updatesToSkipYumOptions=""
+<% end -%>
+/usr/bin/yum check-update $updatesToSkipYumOptions >><%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
 checkUpdateExitCode=$?
 if [ $checkUpdateExitCode -eq 100 ]
 then
@@ -87,8 +96,14 @@ then
   <% end -%>
   
   writeHostAndLogFile "Beginning yum upgrade now!"
+  <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
+  # There are updates configured to be skipped.
+  writeHostAndLogFile "Skipping packages: <%= node["autopatch-nativex"]["updates_to_skip"].join(',') %>"
+  <% else -%>
+  #No configured updates to skip. updatesToSkipYumOptions should be empty
+  <% end -%>
   
-  /usr/bin/yum -y update >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  /usr/bin/yum -y update $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
   yumExitCode=$?
   writeHostAndLogFile "Finished yum upgrade with exit code $yumExitCode"
   

@@ -76,6 +76,8 @@ This cookbook will install the necessary components and enable autopatch by defa
 * `node["autopatch-nativex"]["email_from_address"]` (default: `"#{node['hostname']}@nativex.com"`): The From address for any email notification.
 * `node["autopatch-nativex"]["email_smtp_server"]` (default: `'mail.nativex.com'`): The SMTP server to use to send the notifications.
 * `node["autopatch-nativex"]["auto_reboot_enabled"]` (default: `false`): Whether or not to automatically reboot the machine if the installed updates require it.
+* `node["autopatch-nativex"]["updates_to_skip"]` (default: `[]`): Array of strings where each element corresponds to the name of a package (Linux) or a KB Article ID (Windows) that should be skipped during the check and update process.
+  * NOTE: This is ONLY implemented for Linux as of v1.0.0
 
 ## Dependencies
 
