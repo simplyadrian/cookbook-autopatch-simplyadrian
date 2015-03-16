@@ -7,4 +7,5 @@ long_description 'Installs/Configures autopatch-nativex'
 version          '1.0.0'
 
 depends 'auto-patch'
+depends 'logrotate'
 depends 'windows'

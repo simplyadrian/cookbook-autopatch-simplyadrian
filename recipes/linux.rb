@@ -108,3 +108,12 @@ end
 package "mailx" do
   action :install
 end
+
+# Ensure the autopatch.log file is fresh each month and also so it doesn't infinitely grow.
+logrotate_app 'chef-autopatch' do
+  cookbook  'logrotate'
+  path      "#{node['autopatch-nativex']['working_dir']}/autopatch.log"
+  options   ['missingok', 'nocompress', 'notifempty']
+  frequency 'daily'
+  rotate    3
+end
