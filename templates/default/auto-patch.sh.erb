@@ -11,7 +11,7 @@
 # Param 1: [string] The message to be logged.
 function writeHostAndLogFile {
   echo $1
-  echo "`date -Is` $1" >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 
+  echo "`date -Is` (<%= node['hostname'] %>): $1" >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 
 }
 
 # Send an email 
