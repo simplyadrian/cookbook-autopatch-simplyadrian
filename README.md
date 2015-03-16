@@ -55,9 +55,7 @@ This cookbook will install the necessary components and enable autopatch by defa
 * `node["autopatch-nativex"]["task_days"]` (default: `'TUE'`): Specifies the day of the week to run the task. Valid values: MON, TUE, WED, THU, FRI, SAT, SUN and for `:monthly` schedules 1 - 31 (days of the month). Wildcard "*" specifies all days.
 * `node["autopatch-nativex"]["task_start_time"]` (default: `'04:00'`): The time of the day (using 24-hour clock) the task should run.
 * `node["autopatch-nativex"]["working_dir"]` (default: `'C:\chef_autopatch'`): The working directory for the PowerShell script and  its log files.
-* `node["autopatch-nativex"]["download_install_splay_enabled"]` (default: `true`): enable or disable 'splay' or a random wait before the download (and install) process.
-* `node["autopatch-nativex"]["download_install_splay_min_seconds"]` (default: `0`): Minimum number of random seconds to wait before starting download/install process if `download_install_splay_enabled` = `true`
-* `node["autopatch-nativex"]["download_install_splay_max_seconds"]` (default: `5400`): Maximum number of random seconds to wait before starting download/install process if `download_install_splay_enabled` = `true`
+* `node["autopatch-nativex"]["download_install_splay_max_seconds"]` (default: `5400`): Maximum number of random seconds to wait before starting download/install process. Setting it to `0` disables the feature
 * `node["autopatch-nativex"]["email_notification_mode"]` (default: `'OnlyOnErrorOrManualReboot'`): Controls when email notifications are sent. Valid values:
   * `'OnlyOnErrorOrManualReboot'`: Only send notification if an error occurs or a manual reboot is required.
   * `'Always'`: Always send a notification.
