@@ -136,7 +136,7 @@ try
         # We (potentially) don't want all servers that are running this script to download, install, and reboot at the same time.
         if(<%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -gt 0)
         {
-            $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1 %>
+            $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1
             
             WriteHostAndLogFile ("Download and Install Splay is enabled. Will start downloading and installing in {0:N0} seconds, which is at $((Get-Date).AddSeconds($downloadAndInstallSplayInSec).ToString('g'))" -f $downloadAndInstallSplayInSec)
             Start-Sleep -s $downloadAndInstallSplayInSec
