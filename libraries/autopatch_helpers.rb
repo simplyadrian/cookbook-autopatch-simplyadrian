@@ -1,19 +1,19 @@
 module AutoPatchHelper
   def self.getLCaseWeekdayFromAbbreviation( abbreviatedWeekday )
-    case abbreviatedWeekday 
-    when "MON", "mon"
+    case abbreviatedWeekday.downcase
+    when "mon"
       return "monday"
-    when "TUE", "tue"
+    when "tue"
       return "tuesday"
-    when "WED", "wed"
+    when "wed"
       return "wednesday"
-    when "THU", "thu"
+    when "thu"
       return "thursday"
-    when "FRI", "fri"
+    when "fri"
       return "friday"
-    when "SAT", "sat"
+    when "sat"
       return "saturday"
-    when "SUN", "sun"
+    when "sun"
       return "sunday"
     else
       raise "Could not determine weekday from abbreviation '#{abbreviatedWeekday}'"

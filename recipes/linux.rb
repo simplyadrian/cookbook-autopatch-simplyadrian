@@ -10,7 +10,7 @@
 # Also, translates the attributes in this cookbook to something auto-patch understands
 
 # Translate the autopatch-nativex attribute specifiying frequency into something that auto-patch understands
-if node["autopatch-nativex"]["disabled"] == false
+unless node["autopatch-nativex"]["disabled"]
   # Translate reboot
   node.default['auto-patch']['reboot'] = node["autopatch-nativex"]["auto_reboot_enabled"]
 
@@ -48,7 +48,7 @@ if node["autopatch-nativex"]["disabled"] == false
       #   1) Disabling auto-patch for any month not configured 
       #   2) Setting a flag so that we know this automated process disabled it (so we know it is OK to automatically re-enable)
       #   3) Re-enabling once we are in an "eligible" month.
-      if node["autopatch-nativex"]["task_months"] != "*"
+      unless node["autopatch-nativex"]["task_months"] == "*"
         if node["autopatch-nativex"]["task_months"].split(',').include?(DateTime.now.strftime('%^b'))
           # It is a valid month
           # Check if previously disabled
