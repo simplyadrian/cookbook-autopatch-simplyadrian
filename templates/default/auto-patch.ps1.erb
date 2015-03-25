@@ -59,7 +59,7 @@ function CreateLogFileAndCleanupOldLogs
 function SendEmailNotificationIfRequired
 {
     Param($someErrorOccurred, $manualRebootRequired, $bodyMessage)
-    $mailNotificationMode = "<%= node['autopatch-nativex']['email_nofitication_mode'] %>"
+    $mailNotificationMode = "<%= node['autopatch-nativex']['email_notification_mode'] %>"
 
     $mailNotificationRequired = (($mailNotificationMode -eq "Always") -or ($mailNotificationMode -eq "OnlyOnErrorOrManualReboot" -and ($someErrorOccurred -or $manualRebootRequired)))
     if($mailNotificationRequired)
@@ -133,12 +133,10 @@ try
 
         WriteHostAndLogFile "Found $($objResults.Updates.Count) new updates."
 
-        $DownloadAndInstallSplayEnabled = $<%= node['autopatch-nativex']['download_install_splay_enabled'] %>
-        
         # We (potentially) don't want all servers that are running this script to download, install, and reboot at the same time.
-        if($DownloadAndInstallSplayEnabled)
+        if(<%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -gt 0)
         {
-            $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum <%= node['autopatch-nativex']['download_install_splay_min_seconds'] %>
+            $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1
             
             WriteHostAndLogFile ("Download and Install Splay is enabled. Will start downloading and installing in {0:N0} seconds, which is at $((Get-Date).AddSeconds($downloadAndInstallSplayInSec).ToString('g'))" -f $downloadAndInstallSplayInSec)
             Start-Sleep -s $downloadAndInstallSplayInSec
