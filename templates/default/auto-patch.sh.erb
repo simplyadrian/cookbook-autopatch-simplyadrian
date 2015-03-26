@@ -27,7 +27,7 @@ function sendEmail {
 }
 
 # Based on configuration and the status of the process, conditionally sends an email
-#  Param 1: [string] true or false, indicating whether yum update was attempted
+#  Param 1: [string] true or false, indicating whether yum upgrade was attempted
 #  Param 2: [string] true or false, indicating whether manual reboot is required
 #  Param 3: [integer], return code of previous process
 function sendMailIfNecessary {
@@ -102,7 +102,11 @@ then
   #No configured updates to skip. updatesToSkipYumOptions should be empty
   <% end -%>
   
-  /usr/bin/yum -y update $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% if node["autopatch-nativex"]["update_command_options"].nil? || node["autopatch-nativex"]["update_command_options"].length == 0 -%>
+  /usr/bin/yum -y upgrade $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% else -%>
+  /usr/bin/yum -y upgrade <%= node["autopatch-nativex"]["update_command_options"] %> $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% end -%>
   yumExitCode=$?
   writeHostAndLogFile "Finished yum upgrade with exit code $yumExitCode"
   
