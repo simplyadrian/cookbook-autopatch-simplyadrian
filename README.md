@@ -67,8 +67,8 @@ This cookbook will install the necessary components and enable autopatch by defa
 * `node["autopatch-nativex"]["task_days"]` (default: `'TUE'`): Specifies the day of the week to run the task. Valid values: MON, TUE, WED, THU, FRI, SAT, SUN and for `:monthly` schedules 1 - 31 (days of the month). Wildcard "*" specifies all days.
 * `node["autopatch-nativex"]["task_start_time"]` (default: `'04:00'`): The time of the day (using 24-hour clock) the task should run.
 * `node["autopatch-nativex"]["working_dir"]` (default: `'C:\chef_autopatch'` for Windows; `'/var/log/chef_autopatch'` for Linux): The working directory for the process and its log files.
-* `node["autopatch-nativex"]["download_install_splay_max_seconds"]` (default: `5400`): Maximum number of random seconds to wait before starting download/install process. Setting it to `0` disables the feature
-* `node["autopatch-nativex"]["email_notification_mode"]` (default: `'OnlyOnErrorOrManualReboot'`): Controls when email notifications are sent. Valid values:
+* `node["autopatch-nativex"]["download_install_splay_max_seconds"]` (default: `3600`): Maximum number of random seconds to wait before starting download/install process. Setting it to `0` disables the feature
+* `node["autopatch-nativex"]["email_notification_mode"]` (default: `'Always'`): Controls when email notifications are sent. Valid values:
   * `'OnlyOnErrorOrManualReboot'`: Only send notification if an error occurs or a manual reboot is required.
   * `'Always'`: Always send a notification.
   * `'Never'`: Never send a notification
@@ -78,6 +78,9 @@ This cookbook will install the necessary components and enable autopatch by defa
 * `node["autopatch-nativex"]["auto_reboot_enabled"]` (default: `false`): Whether or not to automatically reboot the machine if the installed updates require it.
 * `node["autopatch-nativex"]["updates_to_skip"]` (default: `[]`): Array of strings where each element corresponds to the name of a package (Linux) or a KB Article ID (Windows) that should be skipped during the check and update process.
   * NOTE: This is ONLY implemented for Linux as of v1.0.0
+* `node["autopatch-nativex"]["update_command_options"]` (default: `""`): A string that can be injected into the update command to provide additional configuration options.
+  * NOTE: This is ONLY implemented for Linux as of v1.1.0. More specifically, it will be injected into the `yum upgrade` command.  An example use case would be for specifying `--nogpgcheck`
+  * In the future there may be a use case for Windows, which is why it is left generic
 
 ## Dependencies
 
