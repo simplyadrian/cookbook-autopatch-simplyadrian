@@ -72,8 +72,8 @@ function sendMailIfNecessary {
 }
 
 # Real work starts here
-<% if node["auto-patch"]["splay"] > 0 -%>
-theSleepSeconds=$[( ( $RANDOM % <%= node["auto-patch"]["splay"] %> ) + 1 )]
+<% if node['autopatch-nativex']['download_install_splay_max_seconds'] > 0 -%>
+theSleepSeconds=$[( ( $RANDOM % <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> ) + 1 )]
 writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
 sleep "$theSleepSeconds"s
 <% else -%>
@@ -110,7 +110,7 @@ then
   yumExitCode=$?
   writeHostAndLogFile "Finished yum upgrade with exit code $yumExitCode"
   
-  <% if node["auto-patch"]["reboot"] -%>
+  <% if node['autopatch-nativex']['auto_reboot_enabled'] -%>
   writeHostAndLogFile "Auto Reboot is enabled. Rebooting now!"
   sendMailIfNecessary true false $yumExitCode
   reboot
