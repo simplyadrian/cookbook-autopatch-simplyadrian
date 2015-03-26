@@ -72,6 +72,13 @@ function sendMailIfNecessary {
 }
 
 # Real work starts here
+<% if node["auto-patch"]["splay"] > 0 -%>
+theSleepSeconds=$[( ( $RANDOM % <%= node["auto-patch"]["splay"] %> ) + 1 )]
+writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
+sleep "$theSleepSeconds"s
+<% else -%>
+writeHostAndLogFile "Download and Install Splay is disabled."
+<% end -%>
 writeHostAndLogFile "Checking for available updates."
 <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
 # There are updates configured to be skipped.  Skip them during the update check as well.
@@ -86,15 +93,7 @@ updatesToSkipYumOptions=""
 checkUpdateExitCode=$?
 if [ $checkUpdateExitCode -eq 100 ]
 then
-  <% if node["auto-patch"]["splay"] > 0 -%>
   writeHostAndLogFile "There is at least one update available. Commencing update process."
-  theSleepSeconds=$[( ( $RANDOM % <%= node["auto-patch"]["splay"] %> ) + 1 )]
-  writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
-  sleep "$theSleepSeconds"s
-  <% else -%>
-  writeHostAndLogFile "Download and Install Splay is disabled."
-  <% end -%>
-  
   writeHostAndLogFile "Beginning yum upgrade now!"
   <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
   # There are updates configured to be skipped.
