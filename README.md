@@ -46,6 +46,7 @@ The provided recipes are:
   * Wraps the 'auto-patch' community cookbook
     * Translates `autopatch-nativex` attributes into the equivalent configuration for `auto-patch`
     * Replaces the Bash template from `auto-patch` with one provided by this cookbook that has all the similar features as the Windows version.
+    * NOTE: This cookbook does no translation for the auto-patch 'prep' feature! It is disabled by default, but there is nothing stopping it from being turned on.
   * Creates and enables (or disables) the Cron task
   * Lays down the templated Bash script.
 
