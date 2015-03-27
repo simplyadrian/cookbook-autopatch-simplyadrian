@@ -27,7 +27,7 @@ function sendEmail {
 }
 
 # Based on configuration and the status of the process, conditionally sends an email
-#  Param 1: [string] true or false, indicating whether yum update was attempted
+#  Param 1: [string] true or false, indicating whether yum upgrade was attempted
 #  Param 2: [string] true or false, indicating whether manual reboot is required
 #  Param 3: [integer], return code of previous process
 function sendMailIfNecessary {
@@ -72,6 +72,13 @@ function sendMailIfNecessary {
 }
 
 # Real work starts here
+<% if node['autopatch-nativex']['download_install_splay_max_seconds'] > 0 -%>
+theSleepSeconds=$[( ( $RANDOM % <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> ) + 1 )]
+writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
+sleep "$theSleepSeconds"s
+<% else -%>
+writeHostAndLogFile "Download and Install Splay is disabled."
+<% end -%>
 writeHostAndLogFile "Checking for available updates."
 <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
 # There are updates configured to be skipped.  Skip them during the update check as well.
@@ -86,15 +93,7 @@ updatesToSkipYumOptions=""
 checkUpdateExitCode=$?
 if [ $checkUpdateExitCode -eq 100 ]
 then
-  <% if node["auto-patch"]["splay"] > 0 -%>
   writeHostAndLogFile "There is at least one update available. Commencing update process."
-  theSleepSeconds=$[( ( $RANDOM % <%= node["auto-patch"]["splay"] %> ) + 1 )]
-  writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
-  sleep "$theSleepSeconds"s
-  <% else -%>
-  writeHostAndLogFile "Download and Install Splay is disabled."
-  <% end -%>
-  
   writeHostAndLogFile "Beginning yum upgrade now!"
   <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
   # There are updates configured to be skipped.
@@ -103,11 +102,15 @@ then
   #No configured updates to skip. updatesToSkipYumOptions should be empty
   <% end -%>
   
-  /usr/bin/yum -y update $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% if node["autopatch-nativex"]["update_command_options"].nil? || node["autopatch-nativex"]["update_command_options"].length == 0 -%>
+  /usr/bin/yum -y upgrade $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% else -%>
+  /usr/bin/yum -y upgrade <%= node["autopatch-nativex"]["update_command_options"] %> $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% end -%>
   yumExitCode=$?
   writeHostAndLogFile "Finished yum upgrade with exit code $yumExitCode"
   
-  <% if node["auto-patch"]["reboot"] -%>
+  <% if node['autopatch-nativex']['auto_reboot_enabled'] -%>
   writeHostAndLogFile "Auto Reboot is enabled. Rebooting now!"
   sendMailIfNecessary true false $yumExitCode
   reboot

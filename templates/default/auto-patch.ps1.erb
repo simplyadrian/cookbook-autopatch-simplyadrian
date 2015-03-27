@@ -102,6 +102,15 @@ try
 {
     Write-Host "Starting script..."
     CreateLogFileAndCleanupOldLogs
+    
+  <% if node['autopatch-nativex']['download_install_splay_max_seconds'] > 0 -%>
+    # We don't want all servers that are running this script to search, download, install, and reboot at the same time.
+    $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1
+    WriteHostAndLogFile ("Download and Install Splay is enabled. Will search, start downloading and installing in {0:N0} seconds, which is at $((Get-Date).AddSeconds($downloadAndInstallSplayInSec).ToString('g'))" -f $downloadAndInstallSplayInSec)
+    Start-Sleep -s $downloadAndInstallSplayInSec
+  <% else -%>
+    WriteHostAndLogFile "Download and Install Splay is disabled. Will start searching for new updates now."
+  <% end -%>
 
     $UpdatesToDownload = New-Object -ComObject "Microsoft.Update.UpdateColl"
     $objServiceManager = New-Object -ComObject "Microsoft.Update.ServiceManager" #Support local instance only
@@ -130,22 +139,7 @@ try
     else
     {
         # There are updates to be installed.
-
         WriteHostAndLogFile "Found $($objResults.Updates.Count) new updates."
-
-        # We (potentially) don't want all servers that are running this script to download, install, and reboot at the same time.
-        if(<%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -gt 0)
-        {
-            $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1
-            
-            WriteHostAndLogFile ("Download and Install Splay is enabled. Will start downloading and installing in {0:N0} seconds, which is at $((Get-Date).AddSeconds($downloadAndInstallSplayInSec).ToString('g'))" -f $downloadAndInstallSplayInSec)
-            Start-Sleep -s $downloadAndInstallSplayInSec
-        }
-        else
-        {
-            WriteHostAndLogFile "Download and Install Splay is disabled."
-        }
-
         WriteHostAndLogFile "Starting download and install NOW!!"
     }
     # === Download Updates ===

@@ -4,7 +4,7 @@ maintainer_email 'derek.bromenshenkel@nativex.com'
 license          'All rights reserved'
 description      'Installs/Configures autopatch-nativex'
 long_description 'Installs/Configures autopatch-nativex'
-version          '1.0.0'
+version          '1.1.0'
 
 depends 'auto-patch'
 depends 'logrotate'

@@ -10,13 +10,14 @@ if node['platform_family'] == 'windows'
 else
   default['autopatch-nativex']['working_dir'] = '/var/log/chef_autopatch'
 end
-default['autopatch-nativex']['download_install_splay_max_seconds'] = 5400
-default['autopatch-nativex']['email_notification_mode'] = 'OnlyOnErrorOrManualReboot'
+default['autopatch-nativex']['download_install_splay_max_seconds'] = 3600
+default['autopatch-nativex']['email_notification_mode'] = 'Always'
 default['autopatch-nativex']['email_to_addresses'] = '"SysEngineers@nativex.com"'
 default['autopatch-nativex']['email_from_address'] = "#{node['hostname']}@nativex.com"
 default['autopatch-nativex']['email_smtp_server'] = 'mail.nativex.com'
 default['autopatch-nativex']['auto_reboot_enabled'] = false
 default['autopatch-nativex']['updates_to_skip'] = []
+default['autopatch-nativex']['update_command_options'] = ""
 
 #syncronize auto-patch enablement with this cookbook's main setting
 default["auto-patch"]["disable"] = node['autopatch-nativex']['disabled']
