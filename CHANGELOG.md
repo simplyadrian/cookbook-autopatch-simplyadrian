@@ -1,6 +1,6 @@
 # 0.1.0
 
-Initial release of autopatch-nativex
+Initial release of autopatch-simplyadrian
 
 # 1.0.0
 
@@ -15,4 +15,4 @@ Initial release of autopatch-nativex
 * Changed default 'email_notification_mode' to 'Always'.
 * Use yum 'upgrade' instead of update to be consistent with yum cookbook.
 * Allow for other yum options to be passed in via attribute (such as --nogpgcheck)
-* In the Linux template, stop using the original 'auto-patch' attributes, and instead use all autopatch-nativex attributes.
+* In the Linux template, stop using the original 'auto-patch' attributes, and instead use all autopatch-simplyadrian attributes.

@@ -11,19 +11,19 @@
 # Param 1: [string] The message to be logged.
 function writeHostAndLogFile {
   echo $1
-  echo "`date -Is` (<%= node['hostname'] %>): $1" >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 
+  echo "`date -Is` (<%= node['hostname'] %>): $1" >> <%= node["autopatch-simplyadrian"]["working_dir"] %>/autopatch.log 
 }
 
 # Send an email 
 #  Param 1: [string] The subject of the message to send
 #  Param 2: [string] The plain-text body of the message to send
 function sendEmail {
-  to=<%= node["autopatch-nativex"]["email_to_addresses"].split(',').map {|x| x.gsub(/"/, "").strip}.join(',') %>
-  from=<%= node["autopatch-nativex"]["email_from_address"] %>
+  to=<%= node["autopatch-simplyadrian"]["email_to_addresses"].split(',').map {|x| x.gsub(/"/, "").strip}.join(',') %>
+  from=<%= node["autopatch-simplyadrian"]["email_from_address"] %>
   subject=$1
   body="$2"
 
-  echo "$body" | mailx -s "$subject" -r "$from" -a "<%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log" -S smtp="<%= node["autopatch-nativex"]["email_smtp_server"] %>" "$to"
+  echo "$body" | mailx -s "$subject" -r "$from" -a "<%= node["autopatch-simplyadrian"]["working_dir"] %>/autopatch.log" -S smtp="<%= node["autopatch-simplyadrian"]["email_smtp_server"] %>" "$to"
 }
 
 # Based on configuration and the status of the process, conditionally sends an email
@@ -34,7 +34,7 @@ function sendMailIfNecessary {
   updateAttempted=$1
   manualReboot=$2
   exitCode=$3
-  mailNotificationMode=<%= node["autopatch-nativex"]["email_notification_mode"] %>
+  mailNotificationMode=<%= node["autopatch-simplyadrian"]["email_notification_mode"] %>
   subject="AutoPatch ran."
   body=""
 
@@ -72,45 +72,45 @@ function sendMailIfNecessary {
 }
 
 # Real work starts here
-<% if node['autopatch-nativex']['download_install_splay_max_seconds'] > 0 -%>
-theSleepSeconds=$[( ( $RANDOM % <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> ) + 1 )]
+<% if node['autopatch-simplyadrian']['download_install_splay_max_seconds'] > 0 -%>
+theSleepSeconds=$[( ( $RANDOM % <%= node['autopatch-simplyadrian']['download_install_splay_max_seconds'] %> ) + 1 )]
 writeHostAndLogFile "Download and Install Splay is enabled. Sleeping for $theSleepSeconds seconds."
 sleep "$theSleepSeconds"s
 <% else -%>
 writeHostAndLogFile "Download and Install Splay is disabled."
 <% end -%>
 writeHostAndLogFile "Checking for available updates."
-<% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
+<% if node["autopatch-simplyadrian"]["updates_to_skip"].length > 0 -%>
 # There are updates configured to be skipped.  Skip them during the update check as well.
-writeHostAndLogFile "Skipping packages: <%= node["autopatch-nativex"]["updates_to_skip"].join(',') %>"
+writeHostAndLogFile "Skipping packages: <%= node["autopatch-simplyadrian"]["updates_to_skip"].join(',') %>"
 <%# The following ruby code maps each 'skippable' element in the array to a string preceded by '-x '. -x is the skip option for yum. Then joins those together with spaces %>
-updatesToSkipYumOptions="<%= node["autopatch-nativex"]["updates_to_skip"].map { |skipPkg| "-x #{skipPkg}" }.join(' ') %>"
+updatesToSkipYumOptions="<%= node["autopatch-simplyadrian"]["updates_to_skip"].map { |skipPkg| "-x #{skipPkg}" }.join(' ') %>"
 <% else -%>
 #No configured updates to skip.
 updatesToSkipYumOptions=""
 <% end -%>
-/usr/bin/yum check-update $updatesToSkipYumOptions >><%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+/usr/bin/yum check-update $updatesToSkipYumOptions >><%= node["autopatch-simplyadrian"]["working_dir"] %>/autopatch.log 2>&1
 checkUpdateExitCode=$?
 if [ $checkUpdateExitCode -eq 100 ]
 then
   writeHostAndLogFile "There is at least one update available. Commencing update process."
   writeHostAndLogFile "Beginning yum upgrade now!"
-  <% if node["autopatch-nativex"]["updates_to_skip"].length > 0 -%>
+  <% if node["autopatch-simplyadrian"]["updates_to_skip"].length > 0 -%>
   # There are updates configured to be skipped.
-  writeHostAndLogFile "Skipping packages: <%= node["autopatch-nativex"]["updates_to_skip"].join(',') %>"
+  writeHostAndLogFile "Skipping packages: <%= node["autopatch-simplyadrian"]["updates_to_skip"].join(',') %>"
   <% else -%>
   #No configured updates to skip. updatesToSkipYumOptions should be empty
   <% end -%>
   
-  <% if node["autopatch-nativex"]["update_command_options"].nil? || node["autopatch-nativex"]["update_command_options"].length == 0 -%>
-  /usr/bin/yum -y upgrade $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  <% if node["autopatch-simplyadrian"]["update_command_options"].nil? || node["autopatch-simplyadrian"]["update_command_options"].length == 0 -%>
+  /usr/bin/yum -y upgrade $updatesToSkipYumOptions >> <%= node["autopatch-simplyadrian"]["working_dir"] %>/autopatch.log 2>&1
   <% else -%>
-  /usr/bin/yum -y upgrade <%= node["autopatch-nativex"]["update_command_options"] %> $updatesToSkipYumOptions >> <%= node["autopatch-nativex"]["working_dir"] %>/autopatch.log 2>&1
+  /usr/bin/yum -y upgrade <%= node["autopatch-simplyadrian"]["update_command_options"] %> $updatesToSkipYumOptions >> <%= node["autopatch-simplyadrian"]["working_dir"] %>/autopatch.log 2>&1
   <% end -%>
   yumExitCode=$?
   writeHostAndLogFile "Finished yum upgrade with exit code $yumExitCode"
   
-  <% if node['autopatch-nativex']['auto_reboot_enabled'] -%>
+  <% if node['autopatch-simplyadrian']['auto_reboot_enabled'] -%>
   writeHostAndLogFile "Auto Reboot is enabled. Rebooting now!"
   sendMailIfNecessary true false $yumExitCode
   reboot

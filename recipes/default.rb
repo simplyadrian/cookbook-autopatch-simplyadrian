@@ -1,19 +1,19 @@
 #
-# Cookbook Name:: autopatch-nativex
+# Cookbook Name:: autopatch-simplyadrian
 # Recipe:: default
 #
-# Copyright (C) 2015 NativeX
+# Copyright (C) 2015 simplyadrian
 #
 # All rights reserved - Do Not Redistribute
 #
 
 directory "Auto Patch Working Directory" do
-  path node['autopatch-nativex']['working_dir']
+  path node['autopatch-simplyadrian']['working_dir']
   action :create
 end
 
 if node['platform_family'] == 'windows'
-  include_recipe 'autopatch-nativex::windows'
+  include_recipe 'autopatch-simplyadrian::windows'
 else
-  include_recipe 'autopatch-nativex::linux'
+  include_recipe 'autopatch-simplyadrian::linux'
 end

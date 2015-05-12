@@ -3,7 +3,6 @@
 # Local modifications will be overwritten by Chef.
 #
 # Powershell 2.0
-# Copyright (c) 2008-2013 RightScale, Inc, All Rights Reserved Worldwide.
 
 # Stop and fail script when a command fails.
 $errorActionPreference = "Stop"
@@ -59,12 +58,12 @@ function CreateLogFileAndCleanupOldLogs
 function SendEmailNotificationIfRequired
 {
     Param($someErrorOccurred, $manualRebootRequired, $bodyMessage)
-    $mailNotificationMode = "<%= node['autopatch-nativex']['email_notification_mode'] %>"
+    $mailNotificationMode = "<%= node['autopatch-simplyadrian']['email_notification_mode'] %>"
 
     $mailNotificationRequired = (($mailNotificationMode -eq "Always") -or ($mailNotificationMode -eq "OnlyOnErrorOrManualReboot" -and ($someErrorOccurred -or $manualRebootRequired)))
     if($mailNotificationRequired)
     {
-        $mailToAddresses = <%= node['autopatch-nativex']['email_to_addresses'] %>
+        $mailToAddresses = <%= node['autopatch-simplyadrian']['email_to_addresses'] %>
         $mailSubject = "AutoPatch ran."
         $mailPriority = [System.Net.Mail.MailPriority]::Normal
         $mailBody = "$($bodyMessage)`n`nFull log attached"
@@ -89,7 +88,7 @@ function SendEmailNotificationIfRequired
             $mailSubject = "$($mailSubject) Errors: No"
         }
         
-       Send-MailMessage -From "<%= node['autopatch-nativex']['email_from_address'] %>" -To $mailToAddresses -Subject $mailSubject -Body $mailBody -SmtpServer "mail.nativex.com" -Priority $mailPriority -Attachments $global:logFile
+       Send-MailMessage -From "<%= node['autopatch-simplyadrian']['email_from_address'] %>" -To $mailToAddresses -Subject $mailSubject -Body $mailBody -SmtpServer "mail.simplyadrian.com" -Priority $mailPriority -Attachments $global:logFile
     }
     else
     {
@@ -103,9 +102,9 @@ try
     Write-Host "Starting script..."
     CreateLogFileAndCleanupOldLogs
     
-  <% if node['autopatch-nativex']['download_install_splay_max_seconds'] > 0 -%>
+  <% if node['autopatch-simplyadrian']['download_install_splay_max_seconds'] > 0 -%>
     # We don't want all servers that are running this script to search, download, install, and reboot at the same time.
-    $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-nativex']['download_install_splay_max_seconds'] %> -Minimum 1
+    $downloadAndInstallSplayInSec = Get-Random -Maximum <%= node['autopatch-simplyadrian']['download_install_splay_max_seconds'] %> -Minimum 1
     WriteHostAndLogFile ("Download and Install Splay is enabled. Will search, start downloading and installing in {0:N0} seconds, which is at $((Get-Date).AddSeconds($downloadAndInstallSplayInSec).ToString('g'))" -f $downloadAndInstallSplayInSec)
     Start-Sleep -s $downloadAndInstallSplayInSec
   <% else -%>
@@ -300,7 +299,7 @@ try
     }
     if($NeedsReboot) #checks if any update requires reboot after installation
     {
-        $AutoRebootAllowed = $<%= node['autopatch-nativex']['auto_reboot_enabled'] %>
+        $AutoRebootAllowed = $<%= node['autopatch-simplyadrian']['auto_reboot_enabled'] %>
         if($AutoRebootAllowed)
         {   
             WriteHostAndLogFile "Reboot is required, and Auto reboot is allowed on this machine. Rebooting NOW!"
